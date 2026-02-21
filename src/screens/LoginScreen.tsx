@@ -1,6 +1,7 @@
 /**
  * Tela de Login do v-app
- * Autenticação com Supabase para usuários assinantes
+ * Versão simplificada - Login simulado para testes
+ * TODO: Integrar Supabase quando CocoaPods estiver configurado
  */
 
 import React, { useState } from 'react';
@@ -21,7 +22,6 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types';
 import { useAppStore } from '../store';
-import { signInWithEmail } from '../lib/supabase';
 
 type LoginScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Login'>;
@@ -43,46 +43,24 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
 
     setIsLoading(true);
 
-    try {
-      const { user, session, error } = await signInWithEmail(email.trim(), password);
+    // Simular delay de rede
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-      if (error) {
-        let errorMessage = 'Email ou senha incorretos';
-        
-        if (error.message.includes('Invalid login credentials')) {
-          errorMessage = 'Email ou senha incorretos';
-        } else if (error.message.includes('Email not confirmed')) {
-          errorMessage = 'Confirme seu email antes de entrar';
-        } else if (error.message.includes('Too many requests')) {
-          errorMessage = 'Muitas tentativas. Aguarde alguns minutos.';
-        } else {
-          errorMessage = error.message;
-        }
-        
-        Alert.alert('Erro', errorMessage);
-        return;
-      }
-
-      if (user && session) {
-        setUser({
-          id: user.id,
-          email: user.email || '',
-          name: user.user_metadata?.name || user.email?.split('@')[0] || '',
-          token: session.access_token,
-        });
-        navigation.replace('Chat');
-      } else {
-        Alert.alert('Erro', 'Falha ao obter dados do usuário');
-      }
-    } catch (error) {
-      console.error('[Login] Exception:', error);
-      Alert.alert(
-        'Erro de conexão',
-        'Não foi possível conectar ao servidor. Verifique sua internet.'
-      );
-    } finally {
-      setIsLoading(false);
+    // Login simulado para testes
+    // TODO: Substituir por autenticação real com Supabase
+    if (password.length >= 4) {
+      setUser({
+        id: 'test-user-id',
+        email: email.trim(),
+        name: email.split('@')[0] || 'Usuário',
+        token: 'simulated-token',
+      });
+      navigation.replace('Chat');
+    } else {
+      Alert.alert('Erro', 'Senha deve ter pelo menos 4 caracteres');
     }
+
+    setIsLoading(false);
   };
 
   const handleForgotPassword = () => {
@@ -111,6 +89,9 @@ export default function LoginScreen({ navigation }: LoginScreenProps) {
             <Text style={styles.logoText}>V</Text>
           </View>
           <Text style={styles.brandName}>vinicius.ai</Text>
+          {__DEV__ && (
+            <Text style={styles.devBadge}>MODO DESENVOLVIMENTO</Text>
+          )}
         </View>
 
         {/* Form */}
@@ -236,6 +217,15 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#ffffff',
     marginTop: 16,
+  },
+  devBadge: {
+    fontSize: 10,
+    color: '#ff9800',
+    marginTop: 8,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    backgroundColor: '#1a1a1a',
+    borderRadius: 4,
   },
   formContainer: {
     width: '100%',
