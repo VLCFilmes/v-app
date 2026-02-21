@@ -26,9 +26,9 @@ type ChatScreenProps = {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Chat'>;
 };
 
-// URL do v-frontend (modo app usa subdomínio app.*)
+// URL do v-frontend (modo app usa subdomínio específico)
 const CHAT_URL = __DEV__ 
-  ? 'https://app.test.vinicius.ai'
+  ? 'https://apptest.vinicius.ai'
   : 'https://app.vinicius.ai';
 
 // User-Agent identifica o app nativo (ViniciusApp/) + simula Safari iOS
